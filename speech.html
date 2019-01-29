@@ -339,6 +339,14 @@
                   }
                     this.final_transcript += temp;
                 } else {
+                  let tmp = temp.split(" ");
+                  for (let index = tmp.length; index > -1; index--) {
+                    const element = tmp.slice(0, index).join(" ");
+                    if (interim_transcript.endsWith(element)) {
+                      temp = " " + tmp.slice(index).join(" ");
+                      break;
+                    }
+                  }
                   interim_transcript += temp;
                 }
               }
