@@ -328,7 +328,7 @@
                 let temp = event.results[i][0].transcript;
                 if (event.results[i].isFinal && !interim_transcript.endsWith(temp)) {
                   if (this.checkInter(temp)){
-                    let tmp = temp.split(" ");
+                    let tmp = temp.split("");
                     for (let index = tmp.length; index > -1; index--) {
                       const element = tmp.slice(0, index).join("");
                       if (this.final_transcript.endsWith(element)) {
