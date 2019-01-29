@@ -1,482 +1,437 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Speech to text conversion</title>
+    <link
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+      rel="stylesheet"
+    />
+    <style>
+      #results {
+        font-size: 14px;
+        font-weight: bold;
+        border: 1px solid #ddd;
+        padding: 15px;
+        text-align: left;
+        min-height: 150px;
+        width: 100%;
+      }
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta http-equiv="X-UA-Compatible" content="ie=edge">
-  <title>Speech to text conversion</title>
-  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  <style>
-    #results {
-      font-size: 14px;
-      font-weight: bold;
-      border: 1px solid #ddd;
-      padding: 15px;
-      text-align: left;
-      min-height: 150px;
-      width: 100%;
-    }
+      .interim {
+        color: gray;
+      }
 
-    .interim {
-      color: gray;
-    }
+      .final {
+        color: black;
+        padding-right: 3px;
+      }
 
-    .final {
-      color: black;
-      padding-right: 3px;
-    }
+      .markup {
+        align-items: center;
+        box-shadow: none;
+        display: flex;
+        border-radius: 2px;
+        position: relative;
+        overflow-x: auto;
+        overflow-y: hidden;
+        margin-bottom: 16px;
+      }
 
-    .v-markup {
-      align-items: center;
-      box-shadow: none;
-      display: flex;
-      border-radius: 2px;
-      position: relative;
-      overflow-x: auto;
-      overflow-y: hidden;
-      margin-bottom: 16px;
-    }
+      .markup pre,
+      .markup code {
+        margin: 0;
+        background: transparent;
+        font-family: "Inconsolata", monospace;
+        font-weight: 300;
+        font-size: 15px;
+        line-height: 1.55;
+      }
 
-    .v-markup pre,
-    .v-markup code {
-      margin: 0;
-      background: transparent;
-      font-family: "Inconsolata", monospace;
-      font-weight: 300;
-      font-size: 15px;
-      line-height: 1.55;
-    }
+      .markup code {
+        position: relative;
+        box-shadow: none;
+        overflow-x: auto;
+        overflow-y: hidden;
+        word-break: break-word;
+        flex-wrap: wrap;
+        align-items: center;
+        vertical-align: middle;
+        white-space: pre-wrap;
+      }
 
-    .v-markup code {
-      position: relative;
-      box-shadow: none;
-      overflow-x: auto;
-      overflow-y: hidden;
-      word-break: break-word;
-      flex-wrap: wrap;
-      align-items: center;
-      vertical-align: middle;
-      white-space: pre-wrap;
-    }
+      .markup code:before {
+        display: none;
+      }
 
-    .v-markup code:before {
-      display: none;
-    }
+      /* .markup__copied {
+        position: absolute;
+        top: 12px;
+        right: 0px;
+      } */
 
-    .v-markup__copied {
-      position: absolute;
-      top: 12px;
-      right: 50px;
-    }
+      .markup__copy {
+        position: absolute;
+        right: 10px;
+        top: 10px;
+        cursor: pointer;
+        z-index: 1;
+      }
 
-    .v-markup__copy {
-      position: absolute;
-      right: 0px;
-      top: 0px;
-      cursor: pointer;
-      width: 25px;
-      height: 25px;
-      z-index: 1;
-    }
+      .markup:after {
+        position: absolute;
+        right: 10px;
+        transition: opacity 0.2s ease-in;
+        content: attr(data-lang);
+        color: rgba(0, 0, 0, 0.3);
+        font-size: 1rem;
+        font-weight: 700;
+        top: 5px;
+      }
 
-    .v-markup:after {
-      position: absolute;
-      right: 10px;
-      transition: opacity 0.2s ease-in;
-      content: attr(data-lang);
-      color: rgba(0, 0, 0, 0.3);
-      font-size: 1rem;
-      font-weight: 700;
-      top: 5px;
-    }
+      .markup:hover:after {
+        opacity: 0;
+      }
 
-    .v-markup:hover:after {
-      opacity: 0;
-    }
+      progress{
+        width: 100%;
+        height: 5px;
+      }
+    </style>
+  </head>
 
-    .v-markup .v-icon {
-      color: inherit;
-      position: absolute;
-      right: 0;
-      transition: opacity 0.2s ease-in;
-      font-size: 1.5rem;
-      opacity: 0;
-      top: 0;
-      width: 50px;
-      height: 50px;
-      z-index: 4;
-    }
-
-    .v-markup:hover .v-icon {
-      opacity: 1;
-    }
-    progress:not(value) {
-    /* Get rid of the default appearance */
-    appearance: none;
-    /* This unfortunately leaves a trail of border behind in Firefox and Opera. We can remove that by setting the border to none. */
-    border: none;
-    /* Add dimensions */
-    width: 100%; height: 20px;
-    /* Although firefox doesn't provide any additional pseudo class to style the progress element container, any style applied here works on the container. */
-      background-color: whiteSmoke;
-      border-radius: 3px;
-      box-shadow: 0 2px 3px rgba(0,0,0,.5) inset;
-    /* Of all IE, only IE10 supports progress element that too partially. It only allows to change the background-color of the progress value using the 'color' attribute. */
-    color: royalblue;
-    position: relative;
-    margin: 0 0 1.5em; 
-}
-  </style>
-</head>
-
-<body>
-
-  <div id="app">
-    <div class="text-xs-center">
-      <button
-                          @click="startButton"
-                        >
-                          Start Recording
-                        </button>
-                       
-        <v-card tile>
-          <!-- <v-progress-linear :value="100" :indeterminate="listening" class="my-0" height="5" /> -->
-          <progress></progress>
-          <v-container>
-            <div class="v-markup">
-              <div class="v-markup__copy">
+  <body>
+    <div id="app">
+      <div class="text-xs-center">
+        <button @click="startButton">
+          <span v-if="!listening">Start recording</span>
+          <span v-else>Stop</span>
+        </button>
+        <div class="card">
+          <progress v-if="listening"></progress>
+          <div class="container">
+            <div class="markup">
+              <div class="markup__copy">
+                <span v-if="copied" class="markup__copied">Copied</span>
+                <!-- <span v-if="downloaded" class="markup__copied">Downloaded</span> -->
                 <i class="material-icons" @click="copyMarkup">content_copy</i>
-                <v-slide-x-transition>
-                  <span v-if="copied" class="v-markup__copied">Copied</span>
-                </v-slide-x-transition>
+                <i class="material-icons" @click="downloadMarkup">cloud_download</i>
               </div>
 
               <div id="results">
-
-                <span id="final_span" class="final" contenteditable="true" />
-                <span id="interim_span" class="interim" />
+                <span
+                  id="final_span"
+                  class="final"
+                  contenteditable="true"
+                ></span>
+                <span id="interim_span" class="interim"></span>
               </div>
             </div>
-            <v-layout row wrap>
-              <v-flex xs5>
-                <!-- <v-autocomplete
-                                  id="select_language"
-                                  :items="languages"
-                                  v-model="lang"
-                                  label="Language"
-                                  outline
-                                  chips
-                                  @change="updateCountry"
-                                /> -->
-              </v-flex>
-              <v-flex xs2 style="text-align:center">
-                <v-progress-circular :size="50" :width="8" :value="100" :indeterminate="listening" color="primary"
-                  style="cursor:pointer" @click="startButton">
-                  <i class="material-icons" v-if="listening">mic</i>
-                  <i class="material-icons" v-else>mic_off</i>
-                </v-progress-circular>
-              </v-flex>
-              <v-flex xs5>
-                <!-- <v-autocomplete
-                                  id="select-country"
-                                  :items="countries"
-                                  v-model="country"
-                                  label="Country"
-                                  outline
-                                  chips
-                                  @change="setDialect"
-                                /> -->
-              </v-flex>
-              {{info}}
-              adfa
-              <div id="infotext" />
-            </v-layout>
-
-          </v-container>
-        </v-card>
+            <div>
+              <i class="material-icons" v-if="listening">mic</i>
+              <i class="material-icons" v-else>mic_off</i>
+              <span v-html="info"></span>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
-  </div>
-
-  <!-- development version, includes helpful console warnings -->
-  <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-  <!-- production version, optimized for size and speed -->
-  <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
-  <script>
-    var app = new Vue({
-      el: '#app',
-      data() {
-        return {
-          listening: false,
-          languages: [],
-          countries: [],
-          items: ["Foo", "Bar", "Fizz", "Buzz"],
-          lang: 10,
-          country: 2,
-          dialect: "en-IN",
-          langs: [
-            ["Afrikaans", ["af-ZA"]],
-            ["አማርኛ", ["am-ET"]],
-            ["Azərbaycanca", ["az-AZ"]],
-            ["বাংলা", ["bn-BD", "বাংলাদেশ"], ["bn-IN", "ভারত"]],
-            ["Bahasa Indonesia", ["id-ID"]],
-            ["Bahasa Melayu", ["ms-MY"]],
-            ["Català", ["ca-ES"]],
-            ["Čeština", ["cs-CZ"]],
-            ["Dansk", ["da-DK"]],
-            ["Deutsch", ["de-DE"]],
-            [
-              "English",
-              ["en-AU", "Australia"],
-              ["en-CA", "Canada"],
-              ["en-IN", "India"],
-              ["en-KE", "Kenya"],
-              ["en-TZ", "Tanzania"],
-              ["en-GH", "Ghana"],
-              ["en-NZ", "New Zealand"],
-              ["en-NG", "Nigeria"],
-              ["en-ZA", "South Africa"],
-              ["en-PH", "Philippines"],
-              ["en-GB", "United Kingdom"],
-              ["en-US", "United States"]
+    <!-- development version, includes helpful console warnings -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <!-- production version, optimized for size and speed -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> -->
+    <script>
+      var app = new Vue({
+        el: "#app",
+        data() {
+          return {
+            listening: false,
+            languages: [],
+            countries: [],
+            items: ["Foo", "Bar", "Fizz", "Buzz"],
+            lang: 10,
+            country: 2,
+            dialect: "en-IN",
+            langs: [
+              ["Afrikaans", ["af-ZA"]],
+              ["አማርኛ", ["am-ET"]],
+              ["Azərbaycanca", ["az-AZ"]],
+              ["বাংলা", ["bn-BD", "বাংলাদেশ"], ["bn-IN", "ভারত"]],
+              ["Bahasa Indonesia", ["id-ID"]],
+              ["Bahasa Melayu", ["ms-MY"]],
+              ["Català", ["ca-ES"]],
+              ["Čeština", ["cs-CZ"]],
+              ["Dansk", ["da-DK"]],
+              ["Deutsch", ["de-DE"]],
+              [
+                "English",
+                ["en-AU", "Australia"],
+                ["en-CA", "Canada"],
+                ["en-IN", "India"],
+                ["en-KE", "Kenya"],
+                ["en-TZ", "Tanzania"],
+                ["en-GH", "Ghana"],
+                ["en-NZ", "New Zealand"],
+                ["en-NG", "Nigeria"],
+                ["en-ZA", "South Africa"],
+                ["en-PH", "Philippines"],
+                ["en-GB", "United Kingdom"],
+                ["en-US", "United States"]
+              ],
+              [
+                "Español",
+                ["es-AR", "Argentina"],
+                ["es-BO", "Bolivia"],
+                ["es-CL", "Chile"],
+                ["es-CO", "Colombia"],
+                ["es-CR", "Costa Rica"],
+                ["es-EC", "Ecuador"],
+                ["es-SV", "El Salvador"],
+                ["es-ES", "España"],
+                ["es-US", "Estados Unidos"],
+                ["es-GT", "Guatemala"],
+                ["es-HN", "Honduras"],
+                ["es-MX", "México"],
+                ["es-NI", "Nicaragua"],
+                ["es-PA", "Panamá"],
+                ["es-PY", "Paraguay"],
+                ["es-PE", "Perú"],
+                ["es-PR", "Puerto Rico"],
+                ["es-DO", "República Dominicana"],
+                ["es-UY", "Uruguay"],
+                ["es-VE", "Venezuela"]
+              ],
+              ["Euskara", ["eu-ES"]],
+              ["Filipino", ["fil-PH"]],
+              ["Français", ["fr-FR"]],
+              ["Basa Jawa", ["jv-ID"]],
+              ["Galego", ["gl-ES"]],
+              ["ગુજરાતી", ["gu-IN"]],
+              ["Hrvatski", ["hr-HR"]],
+              ["IsiZulu", ["zu-ZA"]],
+              ["Íslenska", ["is-IS"]],
+              ["Italiano", ["it-IT", "Italia"], ["it-CH", "Svizzera"]],
+              ["ಕನ್ನಡ", ["kn-IN"]],
+              ["ភាសាខ្មែរ", ["km-KH"]],
+              ["Latviešu", ["lv-LV"]],
+              ["Lietuvių", ["lt-LT"]],
+              ["മലയാളം", ["ml-IN"]],
+              ["मराठी", ["mr-IN"]],
+              ["Magyar", ["hu-HU"]],
+              ["ລາວ", ["lo-LA"]],
+              ["Nederlands", ["nl-NL"]],
+              ["नेपाली भाषा", ["ne-NP"]],
+              ["Norsk bokmål", ["nb-NO"]],
+              ["Polski", ["pl-PL"]],
+              ["Português", ["pt-BR", "Brasil"], ["pt-PT", "Portugal"]],
+              ["Română", ["ro-RO"]],
+              ["සිංහල", ["si-LK"]],
+              ["Slovenščina", ["sl-SI"]],
+              ["Basa Sunda", ["su-ID"]],
+              ["Slovenčina", ["sk-SK"]],
+              ["Suomi", ["fi-FI"]],
+              ["Svenska", ["sv-SE"]],
+              ["Kiswahili", ["sw-TZ", "Tanzania"], ["sw-KE", "Kenya"]],
+              ["ქართული", ["ka-GE"]],
+              ["Հայերեն", ["hy-AM"]],
+              [
+                "தமிழ்",
+                ["ta-IN", "இந்தியா"],
+                ["ta-SG", "சிங்கப்பூர்"],
+                ["ta-LK", "இலங்கை"],
+                ["ta-MY", "மலேசியா"]
+              ],
+              ["తెలుగు", ["te-IN"]],
+              ["Tiếng Việt", ["vi-VN"]],
+              ["Türkçe", ["tr-TR"]],
+              ["اُردُو", ["ur-PK", "پاکستان"], ["ur-IN", "بھارت"]],
+              ["Ελληνικά", ["el-GR"]],
+              ["български", ["bg-BG"]],
+              ["Pусский", ["ru-RU"]],
+              ["Српски", ["sr-RS"]],
+              ["Українська", ["uk-UA"]],
+              ["한국어", ["ko-KR"]],
+              [
+                "中文",
+                ["cmn-Hans-CN", "普通话 (中国大陆)"],
+                ["cmn-Hans-HK", "普通话 (香港)"],
+                ["cmn-Hant-TW", "中文 (台灣)"],
+                ["yue-Hant-HK", "粵語 (香港)"]
+              ],
+              ["日本語", ["ja-JP"]],
+              ["हिन्दी", ["hi-IN"]],
+              ["ภาษาไทย", ["th-TH"]]
             ],
-            [
-              "Español",
-              ["es-AR", "Argentina"],
-              ["es-BO", "Bolivia"],
-              ["es-CL", "Chile"],
-              ["es-CO", "Colombia"],
-              ["es-CR", "Costa Rica"],
-              ["es-EC", "Ecuador"],
-              ["es-SV", "El Salvador"],
-              ["es-ES", "España"],
-              ["es-US", "Estados Unidos"],
-              ["es-GT", "Guatemala"],
-              ["es-HN", "Honduras"],
-              ["es-MX", "México"],
-              ["es-NI", "Nicaragua"],
-              ["es-PA", "Panamá"],
-              ["es-PY", "Paraguay"],
-              ["es-PE", "Perú"],
-              ["es-PR", "Puerto Rico"],
-              ["es-DO", "República Dominicana"],
-              ["es-UY", "Uruguay"],
-              ["es-VE", "Venezuela"]
-            ],
-            ["Euskara", ["eu-ES"]],
-            ["Filipino", ["fil-PH"]],
-            ["Français", ["fr-FR"]],
-            ["Basa Jawa", ["jv-ID"]],
-            ["Galego", ["gl-ES"]],
-            ["ગુજરાતી", ["gu-IN"]],
-            ["Hrvatski", ["hr-HR"]],
-            ["IsiZulu", ["zu-ZA"]],
-            ["Íslenska", ["is-IS"]],
-            ["Italiano", ["it-IT", "Italia"], ["it-CH", "Svizzera"]],
-            ["ಕನ್ನಡ", ["kn-IN"]],
-            ["ភាសាខ្មែរ", ["km-KH"]],
-            ["Latviešu", ["lv-LV"]],
-            ["Lietuvių", ["lt-LT"]],
-            ["മലയാളം", ["ml-IN"]],
-            ["मराठी", ["mr-IN"]],
-            ["Magyar", ["hu-HU"]],
-            ["ລາວ", ["lo-LA"]],
-            ["Nederlands", ["nl-NL"]],
-            ["नेपाली भाषा", ["ne-NP"]],
-            ["Norsk bokmål", ["nb-NO"]],
-            ["Polski", ["pl-PL"]],
-            ["Português", ["pt-BR", "Brasil"], ["pt-PT", "Portugal"]],
-            ["Română", ["ro-RO"]],
-            ["සිංහල", ["si-LK"]],
-            ["Slovenščina", ["sl-SI"]],
-            ["Basa Sunda", ["su-ID"]],
-            ["Slovenčina", ["sk-SK"]],
-            ["Suomi", ["fi-FI"]],
-            ["Svenska", ["sv-SE"]],
-            ["Kiswahili", ["sw-TZ", "Tanzania"], ["sw-KE", "Kenya"]],
-            ["ქართული", ["ka-GE"]],
-            ["Հայերեն", ["hy-AM"]],
-            [
-              "தமிழ்",
-              ["ta-IN", "இந்தியா"],
-              ["ta-SG", "சிங்கப்பூர்"],
-              ["ta-LK", "இலங்கை"],
-              ["ta-MY", "மலேசியா"]
-            ],
-            ["తెలుగు", ["te-IN"]],
-            ["Tiếng Việt", ["vi-VN"]],
-            ["Türkçe", ["tr-TR"]],
-            ["اُردُو", ["ur-PK", "پاکستان"], ["ur-IN", "بھارت"]],
-            ["Ελληνικά", ["el-GR"]],
-            ["български", ["bg-BG"]],
-            ["Pусский", ["ru-RU"]],
-            ["Српски", ["sr-RS"]],
-            ["Українська", ["uk-UA"]],
-            ["한국어", ["ko-KR"]],
-            [
-              "中文",
-              ["cmn-Hans-CN", "普通话 (中国大陆)"],
-              ["cmn-Hans-HK", "普通话 (香港)"],
-              ["cmn-Hant-TW", "中文 (台灣)"],
-              ["yue-Hant-HK", "粵語 (香港)"]
-            ],
-            ["日本語", ["ja-JP"]],
-            ["हिन्दी", ["hi-IN"]],
-            ["ภาษาไทย", ["th-TH"]]
-          ],
-          final_transcript: "",
-          recognizing: false,
-          ignore_onend: "",
-          start_timestamp: "",
-          recognition: new webkitSpeechRecognition(),
-          info: "",
-          two_line: /\n\n/g,
-          first_char: /\S/,
-          one_line: /\n/g,
-          copied: "",
-          progress: 100,
-        };
-      },
-      watch: {
-        listening: function (bool) {
-          if (bool) {
-            this.recognition.start();
-            setInterval(() => {
-              if (this.progress > 98) this.progress = 0;
-              else this.progress += 3
-            }, 50)
-            }
-          else this.recognition.stop();
-        }
-      },
-      mounted() {
-        // this.languages = this.langs.map((lang, index) => ({
-        //   value: index,
-        //   text: lang[0]
-        // }));
-        // this.updateCountry();
-
-        if (!("webkitSpeechRecognition" in window)) {
-          this.upgrade();
-        } else {
-          this.recognition.continuous = true;
-          this.recognition.interimResults = true;
-          this.recognition.onstart = function () {
-            this.listening = true;
-            document.getElementById("infotext").innerText = "info_speak_now";
+            final_transcript: "",
+            recognizing: false,
+            ignore_onend: "",
+            start_timestamp: "",
+            recognition: new webkitSpeechRecognition(),
+            info: "",
+            two_line: /\n\n/g,
+            first_char: /\S/,
+            one_line: /\n/g,
+            copied: "",
+            progress: 100
           };
-          this.recognition.onerror = function (event) {
-            if (event.error == "no-speech") {
-              document.getElementById("infotext").innerText = "info_no_speech";
-              this.ignore_onend = true;
-            }
-            if (event.error == "audio-capture") {
-              document.getElementById("infotext").innerText = "info_no_microphone";
-              this.ignore_onend = true;
-            }
-            if (event.error == "not-allowed") {
-              if (event.timeStamp - this.start_timestamp < 100) {
-                document.getElementById("infotext").innerText = "info_blocked";
-              } else {
-                document.getElementById("infotext").innerText = "info_denied";
-              }
-              this.ignore_onend = true;
-            }
-          };
-          this.recognition.onend = function () {
-            this.listening = false;
-            if (this.ignore_onend) {
-              return;
-            }
-            if (!this.final_transcript) {
-              document.getElementById("infotext").innerText = "info_start";
-              return;
-            }
-            document.getElementById("infotext").innerText = "";
-            if (window.getSelection) {
-              window.getSelection().removeAllRanges();
-              var range = document.createRange();
-              range.selectNode(document.getElementById("final_span"));
-              window.getSelection().addRange(range);
-            }
-          };
-          this.recognition.onresult = event => {
-            var interim_transcript = "";
-            for (var i = event.resultIndex; i < event.results.length; ++i) {
-              if (event.results[i].isFinal) {
-                this.final_transcript += event.results[i][0].transcript;
-              } else {
-                interim_transcript += event.results[i][0].transcript;
-              }
-            }
-            this.final_transcript = this.capitalize(this.final_transcript);
-            final_span.innerHTML = this.linebreak(this.final_transcript);
-            interim_span.innerHTML = this.linebreak(interim_transcript);
-            if (this.final_transcript || interim_transcript) {
-            }
-          };
-        }
-      },
-      methods: {
-        updateCountry() {
-          if (this.lang) {
-            let arr = [...this.langs[this.lang].slice(1)];
-            this.countries = arr.map((country, index) => ({
-              value: index,
-              text: country[1],
-              str: country[0]
-            }));
+        },
+        watch: {
+          listening: function() {
+            if (this.listening) {
+              this.recognition.start();
+              setInterval(() => {
+                if (this.progress > 98) this.progress = 0;
+                else this.progress += 3;
+              }, 50);
+            } else this.recognition.stop();
           }
         },
-        setDialect() {
-          this.dialect = this.countries[this.country].str;
-        },
-        upgrade() {
-          alert("voice recognition not supported. Upgrade your browser");
-        },
+        mounted() {
+          // this.languages = this.langs.map((lang, index) => ({
+          //   value: index,
+          //   text: lang[0]
+          // }));
+          // this.updateCountry();
 
-        startButton(event) {
-          if (this.listening) {
-            this.listening = false;
-            return;
+          if (!("webkitSpeechRecognition" in window)) {
+            this.upgrade();
           } else {
-            this.final_transcript = "";
-            this.recognition.lang = this.dialect;
-            this.listening = true;
-            this.ignore_onend = false;
-            final_span.innerHTML = "";
-            interim_span.innerHTML = "";
-            document.getElementById("infotext").innerText = "info_allow";
-            this.start_timestamp = event.timeStamp;
+            this.recognition.continuous = true;
+            this.recognition.interimResults = true;
+            this.recognition.onstart = function() {
+              this.listening = true;
+              console.log(this.start_timestamp);
+              this.info = "info_speak_now";
+            };
+            this.recognition.onerror = (event) => {
+              this.listening = false;
+              this.info = event.error;
+              // if (event.error == "no-speech") {
+              //   this.info = "info_no_speech";
+              //       alert('No speech ');
+              //   this.ignore_onend = true;
+              // }
+              // if (event.error == "audio-capture") {
+              //   this.info = "info_no_microphone";
+              //       alert('No microphone was found');
+              //   this.ignore_onend = true;
+              // }
+              // if (event.error == "not-allowed") {
+              //   if (event.timeStamp - this.start_timestamp < 100) {
+              //     this.info = "info_blocked";
+              //       alert('Blocked')
+              //   } else {
+              //     this.info = "info_denied";
+              //     alert('Permission denied')
+              //   }
+              //   this.ignore_onend = true;
+              // }
+            };
+            this.recognition.onend = function() {
+              this.listening = false;
+              if (this.ignore_onend) {
+                return;
+              }
+              if (!this.final_transcript) {
+                this.info = "info_start";
+                return;
+              }
+              // this.info = "";
+              if (window.getSelection) {
+                window.getSelection().removeAllRanges();
+                var range = document.createRange();
+                range.selectNode(document.getElementById("final_span"));
+                window.getSelection().addRange(range);
+              }
+            };
+            this.recognition.onresult = event => {
+              var interim_transcript = "";
+              for (var i = event.resultIndex; i < event.results.length; ++i) {
+                if (event.results[i].isFinal) {
+                  this.final_transcript += event.results[i][0].transcript;
+                } else {
+                  interim_transcript += event.results[i][0].transcript;
+                }
+              }
+              this.final_transcript = this.capitalize(this.final_transcript);
+              final_span.innerHTML = this.linebreak(this.final_transcript);
+              interim_span.innerHTML = this.linebreak(interim_transcript);
+              if (this.final_transcript || interim_transcript) {
+              }
+            };
           }
         },
-        showInfo(s) {
-          this.info = s;
-        },
+        methods: {
+          updateCountry() {
+            if (this.lang) {
+              let arr = [...this.langs[this.lang].slice(1)];
+              this.countries = arr.map((country, index) => ({
+                value: index,
+                text: country[1],
+                str: country[0]
+              }));
+            }
+          },
+          setDialect() {
+            this.dialect = this.countries[this.country].str;
+          },
+          upgrade() {
+            alert("voice recognition not supported. Upgrade your browser");
+          },
 
-        linebreak(s) {
-          return s.replace(this.two_line, "<p></p>").replace(this.one_line, "<br>");
-        },
-        capitalize(s) {
-          return s.replace(this.first_char, function (m) {
-            return m.toUpperCase();
-          });
-        },
-        copyMarkup() {
-          const markup = document.getElementById("final_span");
-          markup.setAttribute("contenteditable", "true");
-          markup.focus();
-          document.execCommand("selectAll", false, null);
-          this.copied = document.execCommand("copy");
-          markup.removeAttribute("contenteditable");
-          setTimeout(() => {
-            this.copied = false;
-          }, 2000);
+          startButton(event) {
+            if (this.listening) {
+              this.listening = false;
+              return;
+            } else {
+              this.final_transcript = "";
+              this.recognition.lang = this.dialect;
+              this.listening = true;
+              this.ignore_onend = false;
+              final_span.innerHTML = "";
+              interim_span.innerHTML = "";
+              // this.info = "info_allow";
+              this.start_timestamp = new Date().toLocaleString();
+            }
+          },
+          showInfo(s) {
+            this.info = s;
+          },
+
+          linebreak(s) {
+            return s
+              .replace(this.two_line, "<p></p>")
+              .replace(this.one_line, "<br>");
+          },
+          capitalize(s) {
+            return s.replace(this.first_char, function(m) {
+              return m.toUpperCase();
+            });
+          },
+          copyMarkup() {
+            const markup = document.getElementById("final_span");
+            markup.setAttribute("contenteditable", "true");
+            markup.focus();
+            document.execCommand("selectAll", false, null);
+            this.copied = document.execCommand("copy");
+            markup.removeAttribute("contenteditable");
+            setTimeout(() => {
+              this.copied = false;
+            }, 2000);
+          },
+          downloadMarkup() {
+            var a = document.createElement('a');
+            var file = new Blob([this.final_transcript], {type: "text/plain"});
+            a.href = URL.createObjectURL(file);
+            a.download = this.start_timestamp+".txt";
+            a.click();
+            delete(a);
+          }
         }
-      }
-    })
-  </script>
-</body>
-
+      });
+    </script>
+  </body>
 </html>
