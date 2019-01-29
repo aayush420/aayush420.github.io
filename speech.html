@@ -275,7 +275,8 @@
             first_char: /\S/,
             one_line: /\n/g,
             copied: "",
-            progress: 100
+            progress: 100,
+            temp_transcripts: []
           };
         },
         watch: {
@@ -290,12 +291,6 @@
           }
         },
         mounted() {
-          // this.languages = this.langs.map((lang, index) => ({
-          //   value: index,
-          //   text: lang[0]
-          // }));
-          // this.updateCountry();
-
           if (!("webkitSpeechRecognition" in window)) {
             this.upgrade();
           } else {
@@ -309,28 +304,8 @@
             this.recognition.onerror = (event) => {
               this.listening = false;
               this.info = event.error;
-              // if (event.error == "no-speech") {
-              //   this.info = "info_no_speech";
-              //       alert('No speech ');
-              //   this.ignore_onend = true;
-              // }
-              // if (event.error == "audio-capture") {
-              //   this.info = "info_no_microphone";
-              //       alert('No microphone was found');
-              //   this.ignore_onend = true;
-              // }
-              // if (event.error == "not-allowed") {
-              //   if (event.timeStamp - this.start_timestamp < 100) {
-              //     this.info = "info_blocked";
-              //       alert('Blocked')
-              //   } else {
-              //     this.info = "info_denied";
-              //     alert('Permission denied')
-              //   }
-              //   this.ignore_onend = true;
-              // }
             };
-            this.recognition.onend = function() {
+            this.recognition.onend = () => {
               this.listening = false;
               if (this.ignore_onend) {
                 return;
@@ -339,7 +314,6 @@
                 this.info = "info_start";
                 return;
               }
-              // this.info = "";
               if (window.getSelection) {
                 window.getSelection().removeAllRanges();
                 var range = document.createRange();
@@ -347,13 +321,16 @@
                 window.getSelection().addRange(range);
               }
             };
-            this.recognition.onresult = event => {
+            this.recognition.onresult = (event) => {
               var interim_transcript = "";
               for (var i = event.resultIndex; i < event.results.length; ++i) {
+                // console.log(event.results[i]);
+                let temp = event.results[i][0].transcript;
                 if (event.results[i].isFinal) {
-                  this.final_transcript += event.results[i][0].transcript;
+                  if (this.checkInter(temp))
+                    this.final_transcript += temp;
                 } else {
-                  interim_transcript += event.results[i][0].transcript;
+                  interim_transcript += temp;
                 }
               }
               this.final_transcript = this.capitalize(this.final_transcript);
@@ -429,6 +406,20 @@
             a.download = this.start_timestamp+".txt";
             a.click();
             delete(a);
+          },
+          checkInter(txt) {
+            txt = txt.trim();
+            console.log('was here ', txt);
+            if (this.temp_transcripts.length == 5) this.temp_transcripts.splice(0,1);
+            if (this.temp_transcripts.includes(txt)) {
+              console.log('failed')
+              return false;
+            }
+            else {
+              console.log('passed')
+              this.temp_transcripts.push(txt);
+              return true;
+            }
           }
         }
       });
