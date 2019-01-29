@@ -330,9 +330,9 @@
                   if (this.checkInter(temp)){
                     let tmp = temp.split(" ");
                     for (let index = tmp.length; index > -1; index--) {
-                      const element = tmp.slice(0, index).join(" ");
+                      const element = tmp.slice(0, index).join("");
                       if (this.final_transcript.endsWith(element)) {
-                        temp = " " + tmp.slice(index).join(" ");
+                        temp = " " + tmp.slice(index).join("");
                         break;
                       }
                     }
