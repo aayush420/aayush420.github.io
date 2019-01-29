@@ -326,8 +326,8 @@
               for (var i = event.resultIndex; i < event.results.length; ++i) {
                 // console.log(event.results[i]);
                 let temp = event.results[i][0].transcript;
-                if (event.results[i].isFinal) {
-                  if (this.checkInter(temp) && !interim_transcript.endsWith(temp))
+                if (event.results[i].isFinal && !interim_transcript.endsWith(temp)) {
+                  if (this.checkInter(temp))
                     this.final_transcript += temp;
                 } else {
                   interim_transcript += temp;
