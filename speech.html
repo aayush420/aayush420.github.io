@@ -327,7 +327,7 @@
                 // console.log(event.results[i]);
                 let temp = event.results[i][0].transcript;
                 if (event.results[i].isFinal) {
-                  if (this.checkInter(temp))
+                  if (this.checkInter(temp) && !interim_transcript.endsWith(temp))
                     this.final_transcript += temp;
                 } else {
                   interim_transcript += temp;
@@ -411,7 +411,7 @@
             txt = txt.trim();
             console.log('was here ', txt);
             if (this.temp_transcripts.length == 5) this.temp_transcripts.splice(0,1);
-            if (this.temp_transcripts.includes(txt)) {
+            if (this.temp_transcripts.includes(txt) || this.final_transcript.endsWith(txt)) {
               console.log('failed')
               return false;
             }
