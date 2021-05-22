@@ -3,7 +3,7 @@
   <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
   <!-- <div class="bg-red-500 text-red-100">Hello from Tailwind again and again!!</div> -->
   <div id="home" style="display: grid; height: 80vh; place-items: center">
-    <div class="leading-relaxed text-7xl">
+    <div class="leading-relaxed text-7xl mt-16">
       Nothing<br />[ worth having ]<br />comes easy
     </div>
   </div>
