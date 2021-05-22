@@ -1,6 +1,6 @@
 <template>
   <img alt="Vue logo" src="./assets/logo.png" />
-  <div class="bg-red-500">Hello from Tailwind</div>
+  <div class="bg-red-500 text-red-100">Hello from Tailwind</div>
   <HelloWorld msg="Hello Vue 3 + Vite" />
 </template>
 
