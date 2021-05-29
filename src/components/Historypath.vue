@@ -33,9 +33,10 @@ export default {
 
     const setViewportSize = (e) => {
       // const viewportSize = e.matches ? "small" : "large";
+      this.viewportSize = "large"
+      // ToDo: Uncomment this while working on Mobile
       // this.$store.commit("updateViewportState", viewportSize);
       // this.viewportSize = e.matches ? "small" : "large";
-      this.viewportSize = "large"
     };
 
     setViewportSize(mql);
@@ -46,33 +47,34 @@ export default {
 </script>
 
 <style lang="scss">
-html {
-  scroll-behavior: smooth;
-  scroll-padding: 10vh;
-}
+// html {
+//   scroll-behavior: smooth;
+//   scroll-padding: 10vh;
+// }
  
-body {
-  // background: #00dc9e;
-  font-family: "Roboto", Helvetica, Arial, sans-serif;
-  font-style: normal;
-  font-weight: bold;
-  font-size: 16px;
-  line-height: 1.3;
-  letter-spacing: -0.4px;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  color: #000000;
-  margin: 8px;
-} 
+// body {
+//   // background: #00dc9e;
+//   font-family: "Roboto", Helvetica, Arial, sans-serif;
+//   font-style: normal;
+//   font-weight: bold;
+//   font-size: 16px;
+//   line-height: 1.3;
+//   letter-spacing: -0.4px;
+//   -webkit-font-smoothing: antialiased;
+//   -moz-osx-font-smoothing: grayscale;
+//   color: #000000;
+//   margin: 8px;
+// } 
 
-.intro-section {
-  height: 100vh;
-  width: 99%;
-}
+// .intro-section {
+//   height: 100vh;
+//   width: 99%;
+// }
 .cls-1 {
   fill: #15847d;
 }
 
+// ToDo: Uncomment this while working on Mobile
 // @media only screen and (max-width: 1000px) {
 //   #timeline {
 //     max-width: 600px;
