@@ -1,3 +1,14 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.central-grid {
+    display: grid;
+    place-items: center;
+}
+
+.ram {
+    display:grid;
+    grid-gap:1rem;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}

@@ -1,7 +1,7 @@
 <template>
   <header class="h-16 header fixed w-full bg-gray-800 text-gray-50 pt-4 p-2">
     <div class="wrap">
-      <div class="h-8 inline absolute left-0 logo"><a href="#"><img src="../assets/logo.png" class="h-full inline-block px-4" /> <span class="text-xl hidden md:inline-block">Balakrishna Prasad Ganne</span></a></div>
+      <div class="h-8 inline absolute left-0 logo"><a href="#"><img src="../assets/logo.svg" class="h-full inline-block px-4" /> <span class="text-xl hidden md:inline-block">Balakrishna Prasad Ganne</span></a></div>
 
       <a class="h-8 inline-block md:hidden" id="menu-icon" @click="hidden = !hidden">&#9776; Menu</a>
 
