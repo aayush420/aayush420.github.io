@@ -5,10 +5,12 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
+    "lint": "eslint --ext .js,.vue --ignore-path .gitignore --fix src",
     "deploy": "vite build && echo '' > dist/.gitignore && git add dist && git commit -m 'Prod build' && git push && git subtree push --prefix dist origin gh-pages && echo '*' > dist/.gitignore"
   },
   "dependencies": {
-    "vue": "latest"
+    "vue": "latest",
+    "vue-router": "^4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "latest",
