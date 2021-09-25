@@ -15,7 +15,7 @@
             <div class="max-w-sm flex-col rounded overflow-hidden shadow-lg w-full sm:w-1/3" v-for="i in projects[currentTab]" :key="currentTab + i.title">
               <div :class="`h-48 ${currentTab == 'posters' ? 'white' : 'bg-red-500'} central-grid`">
 
-              <img class="" :src="i.image" :alt="i.title" :style="`max-height: ${currentTab == 'posters'? 12 : 6}rem;`">
+              <img class="" :src="i.image" :alt="i.title" :style="`max-height: ${currentTab == 'posters'? '12rem;height:12' : 6}rem;`">
               </div>
               <div class="px-6 py-4">
                 <div class="font-bold text-xl mb-2" v-text="i.title"></div>
