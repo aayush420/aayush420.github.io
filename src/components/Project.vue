@@ -29,11 +29,8 @@ export default {
       return this.projects[this.$route.params.type].find((project) => project.title === this.$route.params.item);
     },
     getProjectImg() {
-      if (this.$route.params.type == "posters") {
-        let b = this.project.image.split("/");
-        let c = [...b.slice(0, -1), "original", b.slice(-1)];
-        return c.join("/");
-      } else return this.project.image;
+      if (this.$route.params.type == "posters") return this.project.originalImage;
+      else return this.project.image;
     },
   },
   methods: {
