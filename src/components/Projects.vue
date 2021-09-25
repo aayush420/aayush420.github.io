@@ -30,7 +30,7 @@
 <script>
 import GaLogo from "../assets/projects/ga-logo.png";
 import MyLogo from "../assets/logo.svg";
-import Pic1Word from "../assets/projects/4pic1word-logo.png";
+import Pic1Word from "../assets/projects/4pic1word-logo.jpg";
 import Poster1 from "../assets/portfolio/1.jpg";
 import Poster2 from "../assets/portfolio/2.jpg";
 import Poster3 from "../assets/portfolio/3.jpg";
