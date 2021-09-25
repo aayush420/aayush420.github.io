@@ -1,7 +1,7 @@
 <template>
   <section class="text-gray-600 body-font">
     <div class="container mx-auto flex px-5 py-24 md:flex-row flex-col items-center">
-      <div class="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0">
+      <div class="lg:max-w-lg lg:w-full md:w-1/2 w-5/6 mb-10 md:mb-0" :style="$route.params.type == 'posters' ? 'cursor:pointer' : ''" @click="toggleFullscreen">
         <img
           class="object-cover object-center rounded bg-red-500 mx-auto"
           alt="hero"
@@ -34,6 +34,23 @@ export default {
         let c = [...b.slice(0, -1), "original", b.slice(-1)];
         return c.join("/");
       } else return this.project.image;
+    },
+  },
+  methods: {
+    toggleFullscreen(event) {
+      if (this.$route.params.type == "posters") {
+        let element = event.target;
+        if (document.fullscreenElement) {
+          return document.exitFullscreen(); // exit fullscreen on next click
+        }
+        if (element.requestFullscreen) {
+          element.requestFullscreen();
+        } else if (this.element.webkitRequestFullscreen) {
+          element.webkitRequestFullscreen(); // Safari
+        } else if (this.element.msRequestFullscreen) {
+          element.msRequestFullscreen(); // IE11
+        }
+      }
     },
   },
 };
