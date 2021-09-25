@@ -14,7 +14,11 @@
     "@vitejs/plugin-vue": "latest",
     "@vue/compiler-sfc": "latest",
     "autoprefixer": "latest",
+    "eslint": "^7.32.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-vue": "^7.18.0",
     "postcss": "latest",
+    "prettier": "^2.4.1",
     "sass": "latest",
     "tailwindcss": "latest",
     "vite": "latest"
