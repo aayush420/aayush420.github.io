@@ -1,4 +1,5 @@
 <template>
+<div id="app_internal">
   <Nav1></Nav1>
   <!-- <img alt="Vue logo" src="./assets/logo.svg" /> -->
   <!-- <div class="bg-red-500 text-red-100">Hello from Tailwind again and again!!</div> -->
@@ -9,9 +10,10 @@
   </div>
   <Projects id="projects"></Projects>
   <div id="about">About Me</div>
-  <Historypath ></Historypath>
+  <Historypath id="history"></Historypath>
   <div id="contact">My Contact Info</div>
   <!-- <HelloWorld msg="Hello Vue 3 + Vite" /> -->
+</div>
 </template>
 
 <script setup>
@@ -32,5 +34,14 @@ import Historypath from "./components/Historypath.vue";
   text-align: center;
   color: #2c3e50;
   /* margin-top: 60px; */
+}
+#app_internal {
+  height: 100vh;
+  overflow-y: scroll;
+  scroll-snap-type: y mandatory;
+  scroll-behavior: smooth;
+}
+#home, #projects, #about, #history, #contact {
+  scroll-snap-align: start;
 }
 </style>
