@@ -20,7 +20,13 @@
         </div>
       </div>
       <div class="container flex flex-wrap justify-center items-center items-stretch gap-4" v-else>
-        <div class="max-w-sm flex-col rounded overflow-hidden shadow-lg w-full sm:w-1/3" v-for="i in projects[currentTab]" :key="currentTab + i.title">
+        <router-link
+          :to="`/project/${currentTab}/${i.title}`"
+          tag="div"
+          class="max-w-sm flex-col rounded overflow-hidden shadow-lg w-full sm:w-1/3"
+          v-for="i in projects[currentTab]"
+          :key="currentTab + i.title"
+        >
           <div :class="`h-48 ${currentTab == 'posters' ? 'white' : 'bg-red-500'} central-grid`">
             <img class="" :src="i.image" :alt="i.title" :style="`max-height: ${currentTab == 'posters' ? '12rem;height:12' : 6}rem;`" />
           </div>
@@ -28,7 +34,7 @@
             <div class="font-bold text-xl mb-2" v-text="i.title"></div>
             <p class="text-gray-700 text-base" v-text="i.description"></p>
           </div>
-        </div>
+        </router-link>
       </div>
     </div>
   </div>
