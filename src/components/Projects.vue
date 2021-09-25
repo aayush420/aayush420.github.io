@@ -15,7 +15,7 @@
             <div class="max-w-sm rounded overflow-hidden shadow-lg" v-for="i in projects[currentTab]" :key="currentTab + i.title">
               <div class="h-48 bg-red-500 central-grid">
 
-              <img class="" :src="i.image" :alt="i.title">
+              <img class="" :src="i.image" :alt="i.title" style="max-height: 6rem;">
               </div>
               <div class="px-6 py-4">
                 <div class="font-bold text-xl mb-2" v-text="i.title"></div>
@@ -29,6 +29,7 @@
 
 <script>
 import GaLogo from "../assets/projects/ga-logo.png";
+import MyLogo from "../assets/logo.svg";
 export default {
     data() {
         return {
@@ -42,8 +43,7 @@ export default {
             projects: {
               websites: [
                 {title: "Global Avionics", description: "A super cool portfolio website for the aviation company Global Avionics.", image: GaLogo},
-                {title: "Global Avionics1", description: "A super cool portfolio website for the aviation company Global Avionics.", image: GaLogo},
-                {title: "Global Avionics2", description: "A super cool portfolio website for the aviation company Global Avionics.", image: GaLogo}
+                {title: "My Portfolio", description: "This very own website with API from Google AppEngine and frontend from GitHub Pages", image: MyLogo},
               ],
               tools: [
                 {title: "Global Avionics", description: "A super cool portfolio website for the aviation company Global Avionics.", image: GaLogo}
