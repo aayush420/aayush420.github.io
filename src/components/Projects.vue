@@ -21,7 +21,8 @@
       </div>
       <div class="container flex flex-wrap justify-center items-center items-stretch gap-4" v-else>
         <router-link
-          :to="`/project/${currentTab}/${i.title}`"
+          :to="i.link ?? `/project/${currentTab}/${i.title}`"
+          :target="i.link ? '_blank' : ''"
           tag="div"
           class="max-w-sm flex-col rounded overflow-hidden shadow-lg w-full sm:w-1/3"
           v-for="i in projects[currentTab]"
@@ -48,7 +49,7 @@ export default {
       tabs: [
         { text: "Websites", value: "websites" },
         { text: "Tools", value: "tools" },
-        { text: "Open Source Contributions", value: "openSource" },
+        { text: "Open Source", value: "openSource" },
         { text: "Posters", value: "posters" },
       ],
     };

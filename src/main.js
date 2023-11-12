@@ -29,19 +29,28 @@ app.config.globalProperties.projects = {
             title: "Calculators",
             description: "Bunch of useful calculators to improve financial planning and help achieve other goals",
             image: MyLogo,
+            link: "/calculators"
         },
         {
             title: "My Portfolio",
             description: "This very own website with API from Google AppEngine and frontend from GitHub Pages",
             image: MyLogo,
+            link: "/"
         },
         {
             title: "Global Avionics",
             description: "A super cool portfolio website for an aviation company Global Avionics.",
             image: GaLogo,
+            link: "//www.globalavionics.in/"
         },
     ],
     tools: [
+        {
+            title: "Home loan calculator",
+            description: "A simple javascript based calculator to calculate the EMI and other details like the amortization schedule, total interest, etc. It also has a feature to vizualize how much we can save by paying extra EMI.",
+            image: MyLogo,
+            link: "/calculators/loan"
+        },
         {
             title: "4 Pics 1 Word Solver",
             description: "A simple python script built to solve 4Pics1Word game puzzles",
@@ -59,6 +68,7 @@ app.config.globalProperties.projects = {
             title: "FyneBuilder",
             description: "A Golang GUI application absed on Fyne to help devs in building UIs",
             image: MyLogo,
+            link: "//github.com/andydotxyz/fynebuilder"
         },
     ],
     posters: [
