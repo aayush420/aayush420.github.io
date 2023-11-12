@@ -26,6 +26,11 @@ let app = createApp(App)
 app.config.globalProperties.projects = {
     websites: [
         {
+            title: "Calculators",
+            description: "Bunch of useful calculators to improve financial planning and help achieve other goals",
+            image: MyLogo,
+        },
+        {
             title: "My Portfolio",
             description: "This very own website with API from Google AppEngine and frontend from GitHub Pages",
             image: MyLogo,
