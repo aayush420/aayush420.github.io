@@ -11,7 +11,7 @@
         <ul class="menu flex flex-col md:flex-row" v-show="!hidden">
           <router-link class="h-8 px-2 mx-2" :to="{ name: 'Home' }">Home</router-link>
           <li class="h-8 px-2 mx-2" v-for="i in links" :key="i.link"><a class="" :href="i.link" v-text="i.text"></a></li>
-          <router-link class="h-8 px-2 mx-2" :to="{ name: 'HistoryPath' }">Life History</router-link>
+          <!-- <router-link class="h-8 px-2 mx-2" :to="{ name: 'HistoryPath' }">Life History</router-link> -->
         </ul>
       </nav>
     </div>

@@ -6,9 +6,23 @@
       <div class="md:leading-relaxed text-2xl md:text-7xl mt-16">Nothing<br />[ worth having ]<br />comes easy</div>
     </div>
     <Projects id="projects"></Projects>
-    <div id="about">About Me</div>
-    <div id="contact">My Contact Info</div>
-    <!-- <HelloWorld msg="Hello Vue 3 + Vite" /> -->
+    <div id="about" class="my-8">
+      <h4 class="text-xl underline">About</h4>
+      <ul class="text-lg list-disc text-center">
+        <li>Just the regular techie.</li>
+        <li>Have worked on some really cool projects.</li>
+        <li>Have some experience with the security stuff. Not a hacker..</li>
+      </ul>
+    </div>
+    <div id="contact" class="">
+      <h4 class="text-xl underline">Contact</h4>
+      <ul class="text-lg text-center">
+        <li> <a class="hover:underline" href="tel:+919492759420"> +91 9492 759 420</a></li>
+        <li> <a class="hover:underline" href="tel:+917438883560">+91 7438 883 560 </a></li>
+        <li> <a class="hover:underline" href="mailto:bala@gannesoft.in">bala@gannesoft.in</a></li>
+      </ul>
+    </div>
+
   </div>
 </template>
 
@@ -31,6 +45,7 @@ export default {
   scroll-snap-type: y mandatory;
   scroll-behavior: smooth;
 }
+
 #home,
 #projects,
 #about,
